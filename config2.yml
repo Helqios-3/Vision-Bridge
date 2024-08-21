@@ -2,3 +2,13 @@ actions:
 - type: alter
   oldValue: "test"
   newValue: "Test"
+- type: replace
+  selector: ".ad-banner"
+  newElement: "<div class='ad-banner'>Advertisement</div>"
+- type: add
+  selector: ".ad-banner"
+  newElement: "<div class='ad-banner'>Advertisement</div>"
+- type: insert
+  position: "next"
+  target: "body"
+  element: "<footer>Broken Content</footer>"
