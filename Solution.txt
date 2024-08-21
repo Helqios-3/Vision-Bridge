@@ -1,3 +1,4 @@
 Created an HTML based on example YAML file to first test my code.
 Searched for examples about YAML parsing in js but found XML so I tried to replicate it after founding js-yaml parser and its documentation.
 I couldn't understand the "." nor "#" on the YAML file at first then figured out that it is needed for query search.
+Because I used Node.js I needed to webpack the code so I needed to setup my script file in a way that setup didn't require changes so added automatic ".yml" extention finding so that it can be used without the need for a bundling for setup.

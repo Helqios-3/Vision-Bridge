@@ -1,7 +1,14 @@
 const fs = require('fs'); // File system module to read YAML files
 const yaml = require('js-yaml'); // YAML file parser
 
-const configFiles = ["config1.yml", "config2.yml"]; 
+const files = fs.readdirSync("./");
+let configFiles = []; 
+for (file of files){
+    if (file.includes(".yml")) {
+        configFiles.push(file)
+    }
+}
+
 let configs = [];
 
 // TODO: Error Catch For Bad YAML Files
