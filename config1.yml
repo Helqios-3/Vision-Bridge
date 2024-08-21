@@ -1,0 +1,22 @@
+actions:
+- type: alter
+  oldValue: "This"
+  newValue: "This text here is about"
+- type: replace
+  selector: "#old-header"
+  newElement: "<header id='new-header'>New Header</header>"
+- type: remove
+  selector: ".ad-banner"
+- type: insert
+  position: "after"
+  target: "body"
+  element: "<footer>Footer Content</footer>"
+- type: alter
+  oldValue: "Machine Learning"
+  newValue: "AI"
+- type: remove
+  selector: ".ad-banner"
+- type: insert
+  position: "after"
+  target: "body"
+  element: "<footer>Random Content</footer>"

@@ -1,13 +1,31 @@
 const fs = require('fs'); // File system module to read YAML files
 const yaml = require('js-yaml'); // YAML file parser
 
-const configFiles = ["config.yml"]; // Suppose to handle multiple YAML files
+const configFiles = ["config1.yml", "config2.yml"]; 
+let configs = [];
 
-const configs = yaml.load(fs.readFileSync("config.yml", "utf-8")); // Read YAML file and parse it as config array
-console.log(configs)
+for (const configFile of configFiles) {
+    let tempConfigs = yaml.load(fs.readFileSync(configFile, "utf-8")); // Read YAML file and parse it as config array
+    configs.push(...tempConfigs.actions);
+    tempConfigs = null;
+}
 
 // Priority Order
 const priority = ["remove", "replace", "insert", "alter"];
+const sortedConfigs = [];
+
+for (const action of priority) {
+    configs.forEach((config, idx) => {
+        if (action === config["type"] && configs.lenght !== 0) {
+            const halfBefore = configs.slice(0, idx)
+            const halfAfter = configs.slice((idx))
+            configs.actions = halfBefore.concat(halfAfter)
+            sortedConfigs.push(config);
+        }
+    }
+    );
+}
+// console.log(sortedConfigs)
 
 // Creating DOM manipulation action functions
 
@@ -35,6 +53,22 @@ function insertAction(position, target, elementToInsert) {
 }
 
 function alterAction(query, newValue) {
-    const bodyInnerText = document.body.innerText; // Copy original text
+    const bodyInnerText = Document.body.innerText; // Copy original text
     document.body.innerText = bodyInnerText.replace(query, newValue) // mutate copy then assign it to text
+}
+
+for (const configuration of sortedConfigs) {
+    switch (configuration["type"]) {
+        case "remove":
+            removeAction(configuration["selector"])
+            break;
+        case "remove":
+            break;
+        case "remove":
+            break;
+        case "remove":
+            break;
+        default:
+            console.error(`Undefined action. Skipped. Action: ${configuration}`)
+    }
 }
