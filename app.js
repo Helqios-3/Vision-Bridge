@@ -4,6 +4,8 @@ const yaml = require('js-yaml'); // YAML file parser
 const configFiles = ["config1.yml", "config2.yml"]; 
 let configs = [];
 
+// TODO: Error Catch For Bad YAML Files
+
 for (const configFile of configFiles) {
     let tempConfigs = yaml.load(fs.readFileSync(configFile, "utf-8")); // Read YAML file and parse it as config array
     configs.push(...tempConfigs.actions);
@@ -28,6 +30,7 @@ for (const action of priority) {
 // console.log(sortedConfigs)
 
 // Creating DOM manipulation action functions
+// TODO: Error catch
 
 function removeAction(query) {
     const elementsToRemove = document.querySelectorAll(query); // Detect elements based on query (element name)
@@ -57,16 +60,21 @@ function alterAction(query, newValue) {
     document.body.innerText = bodyInnerText.replace(query, newValue) // mutate copy then assign it to text
 }
 
+// Applying Configurations
+
 for (const configuration of sortedConfigs) {
     switch (configuration["type"]) {
         case "remove":
-            removeAction(configuration["selector"])
+            removeAction(configuration["selector"]);
             break;
-        case "remove":
+        case "replace":
+            replaceAction(configuration["selector"], configuration["newElement"]);
             break;
-        case "remove":
+        case "insert":
+            insertAction(configuration["position"], configuration["target"], configuration["element"]);
             break;
-        case "remove":
+        case "alter":
+            alterAction(configuration["oldValue"], configuration["newValue"]);
             break;
         default:
             console.error(`Undefined action. Skipped. Action: ${configuration}`)
