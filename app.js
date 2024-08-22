@@ -1,12 +1,15 @@
 const fs = require('fs'); // File system module to read YAML files
 const yaml = require('js-yaml'); // YAML file parser
-const { JSDOM } = require('jsdom');
+const { JSDOM } = require('jsdom'); // DOM parser/ manipulator
+
+
+// Loading Files
 
 // Load HTML document
-const htmlDocument = fs.readFileSync('index.html', 'utf-8');
-const dom = new JSDOM(htmlDocument);
+const htmlDocument = fs.readFileSync('index.html', 'utf-8'); // Read html as string
+const dom = new JSDOM(htmlDocument); // parse the html string
 
-// Now you can manipulate the document as you would with any other DOM Document
+// Reaching the DOM elements
 let htmlDOM = dom.window.document;
 
 // Search through directory to find YAML files
@@ -35,6 +38,9 @@ for (const configFile of configFiles) {
     }
 }
 
+
+// Sorting Configs
+
 // Priority Order
 const priority = ["remove", "replace", "insert", "alter"];
 const sortedConfigs = []; // Sorted actions based on priority
@@ -47,11 +53,17 @@ for (const action of priority) {
         }
     });
 }
-// Creating DOM manipulation action functions
+
+
+// Creating Functions for DOM Manipulation
+
 function removeAction(query, htmlFile) {
     const elementsToRemove = htmlFile.querySelectorAll(query); // Detect elements based on query (element name)
     if (elementsToRemove.length !== 0) {
         elementsToRemove.forEach(element => element.remove()); // Remove them from DOM
+    }
+    else {
+        console.warn(`Could not find ${query} for removal.`)
     }
 }
 
@@ -59,6 +71,9 @@ function replaceAction(query, newElement, htmlFile) {
     const elementsToReplace = htmlFile.querySelectorAll(query);
     if (elementsToReplace.length !== 0) {
         elementsToReplace.forEach(element => element.outerHTML = newElement); // Replace the whole element with the new element
+    }
+    else {
+        console.warn(`Could not find ${query} to replace with ${newElement}.`)
     }
 }
 
@@ -73,6 +88,9 @@ function insertAction(position, target, elementToInsert, htmlFile) {
             console.error(`Undefined insert position. Input: ${position}`); // Raise console error if position parameter not applicable
         }
     }
+    else {
+        console.warn(`Could not find ${target} for insertion location.`)
+    }
 }
 
 function alterAction(query, newValue, htmlFile) {
@@ -80,7 +98,9 @@ function alterAction(query, newValue, htmlFile) {
     htmlFile.body.innerHTML = bodyInnerText.replaceAll(query, newValue); // Mutate copy then assign it to text
 }
 
+
 // Applying Configurations
+
 for (const configuration of sortedConfigs) {
     switch (configuration["type"]) {
         case "remove":
