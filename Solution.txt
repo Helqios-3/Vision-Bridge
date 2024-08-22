@@ -1,4 +1,24 @@
-Created an HTML based on example YAML file to first test my code.
-Searched for examples about YAML parsing in js but found XML so I tried to replicate it after founding js-yaml parser and its documentation.
-I couldn't understand the "." nor "#" on the YAML file at first then figured out that it is needed for query search.
-Because I used Node.js I needed to webpack the code so I needed to setup my script file in a way that setup didn't require changes so added automatic ".yml" extention finding so that it can be used without the need for a bundling for setup.
+1. I searched for examples of YAML parsing in JavaScript but found XML examples instead. So, I tried to replicate it with YAML files.
+2. I first handled loading YAML files after learning about the js-yaml library. I mainly used its npm website for tutorials and documentation.
+3. I couldn't understand the "." nor "#" in the YAML file at first, then figured out that they are needed for query searches.
+4. Writing action functions was easy as my main experience comes from Python; it was similar in code structure. Searching for elements and then applying actions was overall a basic part of the assignment.
+5. After the functions were good enough (I had started with loading one YAML file) I began looping through multiple YAML files with their names in an array like ["config1.yml", "config2.yml"].
+6. I thought about configuration conflicts, so I started ordering from actions that do not work on existing code, which is insert only in our case. Actions that work on existing elements need all elements to be present after all.
+7. Actions that work on existing code are "replace" and "remove". These two are conflicting as a replaced element could be the next removal target or vice versa. While I chose to replace the element rather than remove it altogether, it isn't exactly a definitive choice.
+8. I left the alter action to the last because it just changes text inside elements. It does not matter much as remove works on elements themselves, not on the content of the element, however removing beforehand works well for efficiency as replace searches through whole text.
+9. After I had my ordered array of configs, I looped through them with a switch case based on type, using my already coded functions.
+10. Then I coded writing configured HTML string back to an HTML file with fs named "configured.html". I deleted that file, but if you wish, you can run the code with example YAML files and "index.html".
+
+While this is the main progression of my code. I had different problems and different solutions so I will note them here. However most of my problems occur because I misunderstood the assignment. If it is not acceptable as problems you can skip the rest of the text.
+
+1. Because I used Node.js, I needed to bundle the code so that my app.js could work inside the HTML file.
+2. I needed to set up my JavaScript file in a way that the setup didn't require changes in app.js, as this would create a need for re-bundling, so I added automatic ".yml" extension finding.
+3. However as I figured out later and as one can expect browser environment does not have a file system so I had to rethink the code I wrote and search a lot for what can I do.
+4. I looked into Browserify to simulate a document environment, but it also needed files to exist before bundling, so future tests that will be done on my code to evaluate it wouldn't work with this choice.
+5. I searched through the Webpack bundler for alternatives but came out defeated. So I started reading through the assignment PDF a couple of times to see if I had missed anything. I figured out that I had misunderstood the assignment because I was focused on the browser keyword.
+6. I started searching for HTML parsers for Node.js. I once again mainly used documentation; however, I found YouTube tutorials as well.
+7. I also used Anthropic's Claude and ChatGPT for alternatives I didn't know about however I was worried about LLM hallucinations and bad Reddit data so I generally tried to only ask for concepts and not direct codes that will confuse me further.
+8. After HTML parsing was finally done and my document.querySelector() was working, I used console outputs to test my YAML configs, then finally had success.
+9. I coded the creation of a new HTML file named "configured.html" as output to finalize my assignment.
+
+Thank you for your time. I hope that you are doing great.

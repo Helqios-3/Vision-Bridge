@@ -42,7 +42,7 @@ for (const configFile of configFiles) {
 // Sorting Configs
 
 // Priority Order
-const priority = ["remove", "replace", "insert", "alter"];
+const priority = ["insert", "replace", "remove", "alter"];
 const sortedConfigs = []; // Sorted actions based on priority
 
 // Sort actions based on priority
@@ -120,4 +120,17 @@ for (const configuration of sortedConfigs) {
     }
 }
 
-console.log(htmlDOM.documentElement.outerHTML)
+// console.log(htmlDOM.documentElement.outerHTML)
+
+// Outputing Configured HTML
+
+const configuredHTML = htmlDOM.documentElement.outerHTML; // Assign configured HTML string
+
+fs.writeFile('configured.html', configuredHTML, (error) => { // Write HTML string into a new file
+    if (error) {
+      console.error('Error creating HTML file: ', error);
+    } else {
+      console.log('Configured HTML file has been created successfully.');
+    }
+  });
+
