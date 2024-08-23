@@ -1,64 +1,61 @@
-const fs = require('fs'); // File system module to read YAML files
-const yaml = require('js-yaml'); // YAML file parser
-const { JSDOM } = require('jsdom'); // DOM parser/ manipulator
+// Fetching YAML Files From Server
 
+async function fetchConfigFiles() {
+    const response = await fetch('/yaml-files');
+    const files = await response.json();
+    return files;
+}
 
-// Loading Files
+// Fetching Singular YAML File And Parsing It
 
-// Load HTML document
-const htmlDocument = fs.readFileSync('index.html', 'utf-8'); // Read html as string
-const dom = new JSDOM(htmlDocument); // parse the html string
+async function parseConfigFile(file) {
+    const response = await fetch(file);
+    const text = await response.text();
+    return jsyaml.load(text);
+}
 
-// Reaching the DOM elements
-let htmlDOM = dom.window.document;
+// Filling Configurations Array From Fetched YAML Files
 
-// Search through directory to find YAML files
-const files = fs.readdirSync("./");
-let configFiles = []; // All YAML files in directory
-for (const file of files) {
-    if (file.includes(".yml")) {
-        configFiles.push(file);
+async function fillConfigArray(configFiles) {
+    // If there is no YAML file or no YAML file found, give a warning
+    if (configFiles.length === 0) {
+        console.warn("No configuration YAML file found!");
+    } else {
+        let configs = [];
+        for (const configFile of configFiles) {
+            try {
+                let tempConfigs = await parseConfigFile(configFile) // Read YAML file and parse it as an object with actions array
+                configs.push(...tempConfigs.actions); // Push new configurations to an unsorted array
+            } catch (error) {
+                console.error(`Bad YAML file. Broken file: ${configFile}`);
+            }
+        }
+        return configs;
     }
 }
-
-// If there is no YAML file or no YAML file found, give a warning
-if (configFiles.length === 0) {
-    console.warn("No configuration YAML file found!");
-}
-
-// Pushing YAML file configurations to an array
-let configs = []; // Unsorted configurations
-
-for (const configFile of configFiles) {
-    try {
-        let tempConfigs = yaml.load(fs.readFileSync(configFile, "utf-8")); // Read YAML file and parse it as an object with actions array
-        configs.push(...tempConfigs.actions); // Push new configurations to an unsorted array
-    } catch (error) {
-        console.error(`Bad YAML file. Broken file: ${configFile}`);
-    }
-}
-
 
 // Sorting Configs
 
-// Priority Order
-const priority = ["insert", "replace", "remove", "alter"];
-const sortedConfigs = []; // Sorted actions based on priority
+async function sortConfigArray(configs) {
+    // Priority Order
+    const priority = ["insert", "replace", "remove", "alter"];
+    const sortedConfigs = []; // Sorted actions based on priority
 
-// Sort actions based on priority
-for (const action of priority) {
-    configs.forEach((config, idx) => {
-        if (action === config["type"] && configs.length !== 0) {
-            sortedConfigs.push(config); // Push action to sorted array
-        }
-    });
+    // Sort actions based on priority
+    for (const action of priority) {
+        configs.forEach((config) => {
+            if (action === config["type"] && configs.length !== 0) {
+                sortedConfigs.push(config); // Push action to sorted array
+            }
+        });
+    }
+    return sortedConfigs;
 }
-
 
 // Creating Functions for DOM Manipulation
 
-function removeAction(query, htmlFile) {
-    const elementsToRemove = htmlFile.querySelectorAll(query); // Detect elements based on query (element name)
+function removeAction(query) {
+    const elementsToRemove = document.querySelectorAll(query); // Detect elements based on query (element name)
     if (elementsToRemove.length !== 0) {
         elementsToRemove.forEach(element => element.remove()); // Remove them from DOM
     }
@@ -67,8 +64,8 @@ function removeAction(query, htmlFile) {
     }
 }
 
-function replaceAction(query, newElement, htmlFile) {
-    const elementsToReplace = htmlFile.querySelectorAll(query);
+function replaceAction(query, newElement) {
+    const elementsToReplace = document.querySelectorAll(query);
     if (elementsToReplace.length !== 0) {
         elementsToReplace.forEach(element => element.outerHTML = newElement); // Replace the whole element with the new element
     }
@@ -77,8 +74,8 @@ function replaceAction(query, newElement, htmlFile) {
     }
 }
 
-function insertAction(position, target, elementToInsert, htmlFile) {
-    const targetLocation = htmlFile.querySelector(target); // Find the target location
+function insertAction(position, target, elementToInsert) {
+    const targetLocation = document.querySelector(target); // Find the target location
     if (targetLocation) {
         if (position === "after") {
             targetLocation.insertAdjacentHTML("afterend", elementToInsert); // Insert element after the target
@@ -93,44 +90,53 @@ function insertAction(position, target, elementToInsert, htmlFile) {
     }
 }
 
-function alterAction(query, newValue, htmlFile) {
-    const bodyInnerText = htmlFile.body.innerHTML; // Copy original text
-    htmlFile.body.innerHTML = bodyInnerText.replaceAll(query, newValue); // Mutate copy then assign it to text
+function alterAction(query, newValue) {
+    const bodyInnerText = document.body.innerHTML; // Copy original text
+    // Making sure query is not inside an html element by making sure that it is not afte < nor before > ((?<!<[^>]*?) and (?![^<]*?>)) As well as word is not part of another word like fire and firetruck (\\b) second parameter replaces all instances
+    const safeQuery = new RegExp(`(?<!<[^>]*?)\\b${query}\\b(?![^<]*?>)`, 'g');
+    document.body.innerHTML = bodyInnerText.replace(safeQuery, newValue); // Mutate copy then assign it to text
 }
 
+//  Use All The Functions In Order To Fetch And Apply Configs
 
-// Applying Configurations
+async function applyConfigs() {
+    try {
+        
+        // Fetch YAML configurations; fill config array with them; sort it with priority order
 
-for (const configuration of sortedConfigs) {
-    switch (configuration["type"]) {
-        case "remove":
-            removeAction(configuration["selector"], htmlDOM);
-            break;
-        case "replace":
-            replaceAction(configuration["selector"], configuration["newElement"], htmlDOM);
-            break;
-        case "insert":
-            insertAction(configuration["position"], configuration["target"], configuration["element"], htmlDOM);
-            break;
-        case "alter":
-            alterAction(configuration["oldValue"], configuration["newValue"], htmlDOM);
-            break;
-        default:
-            console.log(`Undefined action. Skipped. Action: ${configuration}`); // Unreachable sortedConfigs only accepts available configs. 
+        const configFiles = await fetchConfigFiles(); // All YAML files *NOT PARSED*
+        console.log("Found YAML Files: ", (configFiles));
+        let configs = await fillConfigArray(configFiles); // Unsorted configurations
+        let sortedConfigs = await sortConfigArray(configs) // Sorted configs
+
+        console.log("Found Total Amount of Actions: ", (await sortedConfigs.length))
+
+        // Applying Configurations
+
+        for (const configuration of sortedConfigs) {
+            switch (configuration["type"]) {
+                case "remove":
+                    removeAction(configuration["selector"]);
+                    break;
+                case "replace":
+                    replaceAction(configuration["selector"], configuration["newElement"]);
+                    break;
+                case "insert":
+                    insertAction(configuration["position"], configuration["target"], configuration["element"]);
+                    break;
+                case "alter":
+                    alterAction(configuration["oldValue"], configuration["newValue"]);
+                    break;
+                default:
+                    console.log(`Undefined action. Skipped. Action: ${configuration}`); // Unreachable sortedConfigs only accepts available configs. 
+            }
+        }
+        console.log('Succesfuly applied possible configurations');
+    } catch (error) {
+        console.error('Error applying configurations:', error);
     }
 }
 
-// console.log(htmlDOM.documentElement.outerHTML)
+// Run configurations after DOM is loaded
 
-// Outputing Configured HTML
-
-const configuredHTML = htmlDOM.documentElement.outerHTML; // Assign configured HTML string
-
-fs.writeFile('configured.html', configuredHTML, (error) => { // Write HTML string into a new file
-    if (error) {
-      console.error('Error creating HTML file: ', error);
-    } else {
-      console.log('Configured HTML file has been created successfully.');
-    }
-  });
-
+document.addEventListener("DOMContentLoaded", applyConfigs());

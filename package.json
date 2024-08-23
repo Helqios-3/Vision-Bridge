@@ -2,5 +2,11 @@
   "dependencies": {
     "js-yaml": "^4.1.0",
     "jsdom": "^24.1.1"
-  }
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "scripts": {
+  "start": "http-server -p 8080 -c-1 --cors"
+}
 }

@@ -1,7 +1,10 @@
 actions:
 - type: alter
-  oldValue: "test"
-  newValue: "Test"
+  oldValue: "class"
+  newValue: "21"
+- type: alter
+  oldValue: "body"
+  newValue: "21"
 - type: replace
   selector: ".ad-banner"
   newElement: "<div class='ad-banner'>Advertisement</div>"
