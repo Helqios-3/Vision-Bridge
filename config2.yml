@@ -5,6 +5,9 @@ actions:
 - type: alter
   oldValue: "body"
   newValue: "21"
+- type: "app.js"
+  oldValue: "body"
+  newValue: "21"
 - type: replace
   selector: ".ad-banner"
   newElement: "<div class='ad-banner'>Advertisement</div>"
