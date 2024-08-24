@@ -7,7 +7,8 @@
 7. Actions that work on existing code are "replace" and "remove". These two are conflicting as a replaced element could be the next removal target or vice versa. While I chose to replace the element rather than remove it altogether, it isn't exactly a definitive choice.
 8. I left the alter action to the last because it just changes text inside elements. It does not matter much as remove works on elements themselves, not on the content of the element, however removing beforehand works well for efficiency as replace searches through whole text.
 9. After I had my ordered array of configs, I looped through them with a switch case based on type, using my already coded functions.
-10. Then I coded writing configured HTML string back to an HTML file with fs named "configured.html". I deleted that file, but if you wish, you can run the code with example YAML files and "index.html".
+10. After this I need to create a server environment so that browser/app.js can fetch YAML files. I mainly copy pasted a boilerplate server code then created unique YAML file request so that server will respond to app.js request.
+11. Then spend quite a sometime at alter action function so that eventhough it searches through .innerHTML it does not make changes in HTML elements. Made sure that query cannot be between < > as well as cannot be part of another word. (Ex: fire -> firetruck)
 
 While this is the main progression of my code. I had different problems and different solutions so I will note them here. However most of my problems occur because I misunderstood the assignment. If it is not acceptable as problems you can skip the rest of the text.
 
@@ -20,5 +21,9 @@ While this is the main progression of my code. I had different problems and diff
 7. I also used Anthropic's Claude and ChatGPT for alternatives I didn't know about however I was worried about LLM hallucinations and bad Reddit data so I generally tried to only ask for concepts and not direct codes that will confuse me further.
 8. After HTML parsing was finally done and my document.querySelector() was working, I used console outputs to test my YAML configs, then finally had success.
 9. I coded the creation of a new HTML file named "configured.html" as output to finalize my assignment.
+10. This was not the correct assignment so I started searching for a way to let browser reach local files. I learned that for security reasons this is pretty much impossible without user input or server-side loading.
+11. After I focused on local development server. I tried learn as much as possible from youtube tutorial as well as pretty much copy paste everything other than previously mentione unique request/respond section.
+12. Even though I tried to learn what server.js does in its code I didn't focus too much on it after server was completed.
+13. I learned about promises and fetch so that app.js can talk with server.js. Restructured my code to finally reach the expected solution to the assignment.
 
 Thank you for your time. I hope that you are doing great.
