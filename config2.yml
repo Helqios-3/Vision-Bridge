@@ -3,6 +3,9 @@ actions:
   oldValue: "class"
   newValue: "21"
 - type: alter
+  oldValue: "Us"
+  newValue: "Changed Text"
+- type: alter
   oldValue: "body"
   newValue: "21"
 - type: "app.js"

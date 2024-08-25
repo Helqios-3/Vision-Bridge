@@ -1,34 +1,73 @@
-
-// This is pretty much not my code I found with another action sample then simply change it to serve YAML files.
-// I tried to learn what does what but I need much more experience with this side of JS.
-
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
+// Load and parse masterConfig
+const masterConfig = yaml.load(fs.readFileSync('./masterConfig.yml', 'utf8')).datasource;
+let lastLoadedHTML = "";
+
+// Create the server
 const server = http.createServer((req, res) => {
+  // Handle YAML files request
   if (req.url === '/yaml-files') {
-    // If requrest is yaml-files try to respond with files if not raise error
     fs.readdir('.', (error, files) => {
       if (error) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Unable to scan directory' }));
         return;
       }
-      // Filter through file types and send back file array.
-      const yamlFiles = files.filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
+      let yamlFiles = [];
+      // Determine the yaml files to return
+      Object.keys(masterConfig.pages).forEach(element => {
+        if (lastLoadedHTML === `./${element}.html`) {
+          console.log("Page Found");
+          yamlFiles = masterConfig.pages[element];
+        }
+      });
+      Object.keys(masterConfig.urls).forEach(element => {
+        if (lastLoadedHTML === `.${element}.html`) {
+          yamlFiles = masterConfig.urls[element];
+        }
+      });
+      Object.keys(masterConfig.hosts).forEach(element => {
+        if (lastLoadedHTML === `./${element.replace(".com", "")}.html`) {
+          yamlFiles = masterConfig.hosts[element];
+        }
+      });
+      console.log(yamlFiles);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(yamlFiles));
     });
-
-// After this part its all copy paste.
-
   } else {
-    // Existing code to serve files
+    // Determine the file path based on request URL and host
     let filePath = '.' + req.url;
     if (filePath === './') {
-      filePath = './index.html';
+      filePath = './index.html'; // Default to index.html
     }
+
+    // Mapping URLs and hosts to specific HTML files
+    const mappings = {
+      '/about': './about.html',
+      '/contact': './contact.html',
+      '/products': './products.html',
+      '/orders': './orders.html',
+      'example.com': './example.html',
+      'another-example.com': './another-example.html'
+    };
+
+    if (mappings[req.url]) {
+      filePath = mappings[req.url];
+    } else if (mappings[req.headers.host]) {
+      filePath = mappings[req.headers.host];
+    }
+    if (filePath === "/yamlFiles" ||  filePath === "./app.js") {
+      lastLoadedHTML = lastLoadedHTML;
+    }
+    else {
+      lastLoadedHTML = filePath;
+    }
+    
 
     const extname = String(path.extname(filePath)).toLowerCase();
     const mimeTypes = {
@@ -47,18 +86,16 @@ const server = http.createServer((req, res) => {
 
     fs.readFile(filePath, (error, content) => {
       if (error) {
-        if(error.code == 'ENOENT') {
-          fs.readFile('./404.html', function(error, content) {
+        if (error.code == 'ENOENT') {
+          fs.readFile('./404.html', (error, content) => {
             res.writeHead(404, { 'Content-Type': 'text/html' });
             res.end(content, 'utf-8');
           });
-        }
-        else {
+        } else {
           res.writeHead(500);
-          res.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
+          res.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
         }
-      }
-      else {
+      } else {
         res.writeHead(200, { 'Content-Type': contentType });
         res.end(content, 'utf-8');
       }

@@ -1,0 +1,19 @@
+datasource:
+  pages:
+    about:
+      - config2.yml
+    contact:
+      - []  # No config file applied for 'contact'
+
+  urls:
+    /products:
+      - config1.yml
+      - config2.yml  # Uses both config1.yml and config2.yml
+    /orders:
+      - config1.yml
+
+  hosts:
+    example.com:
+      - config1.yml
+    another-example.com:
+      - config2.yml

@@ -2,6 +2,9 @@ actions:
 - type: alter
   oldValue: "This"
   newValue: "This text here is about"
+- type: alter
+  oldValue: "powershell"
+  newValue: "Linux bash rules"
 - type: replace
   selector: "#old-header"
   newElement: "<header id='new-header'>New Header</header>"

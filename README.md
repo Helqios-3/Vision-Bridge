@@ -5,6 +5,7 @@
 ### Setup
 
 - This GitHub repo has the modules "server.js" has dependencies on. However, for unforeseen problems, here are the required modules:
+- Only required module to test other host names. `npm install localtunnel`
 ```javascript
   npm install js-yaml // Node.js YAML file parser: js-yaml
   npm install --save-dev http-server   // Node.js Server
@@ -19,6 +20,7 @@
 - Make sure your HTML file is in the same directory with server.js and named "index.html" for it to be configured by YAML configurations.
 - Run server.js with `node server.js` in console and it will run the server which will automatically apply the configurations.
 - You can see your running HTML at http://localhost:8080/
+- Start-Process "http://localhost:8080" -ArgumentList "-H", "Host: example.com"
 
 ### Code Structures
 
