@@ -9,6 +9,7 @@
 9. After I had my ordered array of configs, I looped through them with a switch case based on type, using my already coded functions.
 10. After this I need to create a server environment so that browser/app.js can fetch YAML files. I mainly copy pasted a boilerplate server code then created unique YAML file request so that server will respond to app.js request.
 11. Then spend quite a sometime at alter action function so that eventhough it searches through .innerHTML it does not make changes in HTML elements. Made sure that query cannot be between < > as well as cannot be part of another word. (Ex: fire -> firetruck)
+12. Added masterConfig.yml it gets read in server.js then sends yaml files to app.js fetch request accordingly.
 
 While this is the main progression of my code. I had different problems and different solutions so I will note them here. However most of my problems occur because I misunderstood the assignment. If it is not acceptable as problems you can skip the rest of the text.
 

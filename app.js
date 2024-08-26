@@ -92,7 +92,7 @@ function insertAction(position, target, elementToInsert) {
 
 function alterAction(query, newValue) {
     const bodyInnerText = document.body.innerHTML; // Copy original text
-    // Making sure query is not inside an html element by making sure that it is not afte < nor before > ((?<!<[^>]*?) and (?![^<]*?>)) As well as word is not part of another word like fire and firetruck (\\b) second parameter replaces all instances
+    // Making sure query is not inside an html element by making sure that it is not after < nor before > ((?<!<[^>]*?) and (?![^<]*?>)) As well as word is not part of another word like fire and firetruck (\\b) second parameter replaces all instances
     const safeQuery = new RegExp(`(?<!<[^>]*?)\\b${query}\\b(?![^<]*?>)`, 'g');
     document.body.innerHTML = bodyInnerText.replace(safeQuery, newValue); // Mutate copy then assign it to text
 }

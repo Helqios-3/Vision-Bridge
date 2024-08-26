@@ -4,9 +4,7 @@ datasource:
       - config1.yml
       - config2.yml
     about:
-      - config2.yml
-    contact:
-      - []  # No config file applied for 'contact'
+      - []
 
   urls:
     /products:
