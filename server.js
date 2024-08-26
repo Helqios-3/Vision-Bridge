@@ -1,11 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
+const yaml = require('js-yaml'); // Parse masterConfig.yml
 
 // Load and parse masterConfig
-const masterConfig = yaml.load(fs.readFileSync('./masterConfig.yml', 'utf8')).datasource;
-let lastLoadedHTML = "";
+const masterConfig = yaml.load(fs.readFileSync('./masterConfig.yml', 'utf8')).datasource; // Load and parse masterConfig then assign its main object datasource to a variable
+let lastLoadedHTML = ""; // Keep check of last loaded HTML file for fetching YAML files
 
 // Create the server
 const server = http.createServer((req, res) => {
@@ -21,7 +21,6 @@ const server = http.createServer((req, res) => {
       // Determine the yaml files to return
       Object.keys(masterConfig.pages).forEach(element => {
         if (lastLoadedHTML === `./${element}.html`) {
-          console.log("Page Found");
           yamlFiles = masterConfig.pages[element];
         }
       });
@@ -36,6 +35,7 @@ const server = http.createServer((req, res) => {
         }
       });
       console.log(yamlFiles);
+      // Answer the fetch request with correct YAML files
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(yamlFiles));
     });
@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
     // Determine the file path based on request URL and host
     let filePath = '.' + req.url;
     if (filePath === './') {
-      filePath = './index.html'; // Default to index.html
+      filePath = './home.html'; // Default to index.html
     }
 
     // Mapping URLs and hosts to specific HTML files
@@ -61,6 +61,7 @@ const server = http.createServer((req, res) => {
     } else if (mappings[req.headers.host]) {
       filePath = mappings[req.headers.host];
     }
+    // Keep track of last loaded page in browser so skip specific requests of JavaScript code
     if (filePath === "/yamlFiles" ||  filePath === "./app.js") {
       lastLoadedHTML = lastLoadedHTML;
     }

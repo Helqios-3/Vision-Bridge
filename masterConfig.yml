@@ -1,5 +1,8 @@
 datasource:
   pages:
+    home:
+      - config1.yml
+      - config2.yml
     about:
       - config2.yml
     contact:
